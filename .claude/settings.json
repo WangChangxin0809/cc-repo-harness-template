@@ -64,5 +64,16 @@
         ]
       }
     ]
+  },
+  "extraKnownMarketplaces": {
+    "wangchangxin-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "WangChangxin0809/cc-repo-harness"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "cc-repo-harness@wangchangxin-plugins": true
   }
 }

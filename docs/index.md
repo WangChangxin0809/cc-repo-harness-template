@@ -34,6 +34,15 @@ nobody reopens a finished one to change `doing` to `done` — and each opens wit
 `## Consulted` saying what was searched before the work started, or why nothing
 was. The routing table below points at the `README.md` only.
 
+An **active** plan folder also carries a `CLAUDE.md`, capped at 50 lines by
+`scripts/gates/check_context_budget.py`. It is delivered whenever anything in
+that folder is read, so it holds only what is true *while this plan is in
+flight* — the invariant not to break, the branch, the one command that proves a
+step landed. Not the plan: that is the `README.md` next to it, and restating it
+here means two copies drifting apart in the one place where being out of date is
+most expensive. Delete the file when the plan finishes; a stale one is worse
+than none, because it is still being delivered.
+
 ## I want to X -> read Y -> then edit Z
 
 | I want to | Read first | Then edit |

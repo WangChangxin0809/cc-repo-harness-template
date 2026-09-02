@@ -53,6 +53,13 @@ this file is gone.
 | `.claude/skills/` | how to write docs, checks, the public face, and how to fold a note pile back into the repository |
 | `.claude/rules/` | empty. A rule with `paths:` frontmatter loads only when a matching file is read |
 | `ci.sh` | the one roster. `.github/workflows/ci.yml` calls it rather than restating it |
+| `.claude/settings.json` | wires those hooks, and declares the `cc-repo-harness` plugin as this repository's dependency |
+
+The plugin is declared, not vendored. It holds what *measures* this repository
+— `/assess` and the readers behind it — and nothing this repository needs in
+order to work: delete the declaration and everything above still runs. Claude
+Code will ask each person whether to trust it, which is the right question to
+be asked about third-party code arriving in a clone.
 
 Three layers, and they are not redundant: the hooks act while an agent is
 working, `ci.sh` acts before you push, and CI acts before anything merges. A
