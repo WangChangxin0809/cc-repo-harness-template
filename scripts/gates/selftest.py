@@ -284,6 +284,35 @@ CASES = [
                               "something, when asked to.\n---\n\n"
                               "Read `<plugin>/references/moments.md` first.\n"),
     ),
+    # Bodies are free -- they load when the thing is invoked. The frontmatter
+    # is not: every skill, agent and command is listed by name and description
+    # on every turn, in every repository on the machine, including the ones
+    # that never touch this plugin. Nothing measured that, and this repository
+    # drifted to 350 tokens a turn, most of it one description that had grown a
+    # clause for every symptom anyone might type.
+    dict(
+        gate="check_plugin_structure.py",
+        args=["--always-on-cap", "60"],
+        why="a description that has grown a clause for every symptom",
+        needle="on every turn, cap is 60",
+        plant=lambda t: write(t, "skills/demo/SKILL.md",
+                              "---\nname: demo\ndescription: Demonstrate "
+                              "something, when asked to. " +
+                              "Use it when somebody mentions a thing. " * 12 +
+                              "\n---\n\n# Demo\n\nGuidance lives here.\n"),
+    ),
+    # The other direction: a long *body* is not a cost, and charging for it
+    # would push guidance out of the one place it is free.
+    dict(
+        gate="check_plugin_structure.py",
+        args=["--always-on-cap", "60"],
+        why="a long body behind a short description",
+        needle=None,
+        plant=lambda t: write(t, "skills/demo/SKILL.md",
+                              "---\nname: demo\ndescription: Demonstrate "
+                              "something, when asked to.\n---\n\n# Demo\n\n"
+                              + "A paragraph of guidance.\n" * 400),
+    ),
     dict(
         gate="check_plugin_structure.py",
         why="component directories nested inside .claude-plugin/",
@@ -438,6 +467,34 @@ CASES = [
                   "{\"hooks\": [{\"command\": \"python3 scripts/nothing.py\"}]}\n"
                   "```\n")),
     ),
+    # A ```markdown fence holds sample markup -- the shape of a good how-to
+    # step -- and the paths inside it name nothing in this tree on purpose.
+    # The gate read one as a live command and reported a document that was
+    # doing its job, which is the false red this pair pins.
+    dict(
+        gate="check_docs_runnable.py",
+        why="a command inside a markdown sample is not a command",
+        needle=None,
+        plant=lambda t: write(
+            t, "docs/how-to/writing.md",
+            "# Writing a step\n\nEvery step has three parts:\n\n"
+            "```markdown\n### 3. Rebuild the index\n\n"
+            "    python3 scripts/index/build.py\n\n"
+            "Criterion: `scripts/index/query.py --stats` agrees with git grep.\n"
+            "```\n"),
+    ),
+    # The other half, and the one that keeps the skip narrow: the identical
+    # command in a bash fence is still a finding. Widen SAMPLE_LANGS to every
+    # language and this case is what goes green when it should not.
+    dict(
+        gate="check_docs_runnable.py",
+        why="the same command in a bash fence is still a command",
+        needle="names a script that does not exist",
+        plant=lambda t: write(
+            t, "docs/how-to/writing.md",
+            "# Writing a step\n\n```bash\n"
+            "python3 scripts/index/build.py\n```\n"),
+    ),
     dict(
         gate="check_docs_index.py",
         why="a document nothing routes to",
@@ -590,20 +647,43 @@ CASES = [
     dict(
         gate="check_context_budget.py",
         args=["--cap", "20"],
-        why="a nested CLAUDE.md far over the root cap",
+        why="a nested CLAUDE.md over the root cap is still not charged",
         needle=None,
+        plant=lambda t: write(t, "src/api/CLAUDE.md",
+                              "# api\n\n" + "".join(f"- rule {i}\n"
+                                                    for i in range(1, 30))),
+    ),
+    dict(
+        gate="check_context_budget.py",
+        args=["--cap", "20"],
+        why="a scoped .claude/rules file over the root cap is not charged",
+        # The escape hatch this gate exists to push work toward. Charging for a
+        # scoped rule would push it straight back into CLAUDE.md, which is the
+        # outcome the cap is trying to prevent.
+        needle=None,
+        plant=lambda t: write(t, ".claude/rules/api.md",
+                              '---\npaths:\n  - "src/**"\n---\n\n'
+                              + "".join(f"- rule {i}\n" for i in range(1, 30))),
+    ),
+    # Uncharged is not unbounded. The two cases above prove neither escape
+    # hatch is billed on every turn; these two prove each still has a ceiling
+    # of its own, because the cost of a three-hundred-line scoped rule did not
+    # vanish when it left CLAUDE.md -- it moved from every turn to every
+    # matching read, which is the worse of the two.
+    dict(
+        gate="check_context_budget.py",
+        args=["--cap", "20", "--nested-cap", "50"],
+        why="a nested CLAUDE.md that has become a second root file",
+        needle="second root file",
         plant=lambda t: write(t, "src/api/CLAUDE.md",
                               "# api\n\n" + "".join(f"- rule {i}\n"
                                                     for i in range(1, 80))),
     ),
     dict(
         gate="check_context_budget.py",
-        args=["--cap", "20"],
-        why="a .claude/rules file that declares paths:, far over the cap",
-        # The escape hatch this gate exists to push work toward. Charging for a
-        # scoped rule would push it straight back into CLAUDE.md, which is the
-        # outcome the cap is trying to prevent.
-        needle=None,
+        args=["--cap", "20", "--scoped-cap", "40"],
+        why="a scoped rule longer than one file's worth of context",
+        needle="scoped rule is longer",
         plant=lambda t: write(t, ".claude/rules/api.md",
                               '---\npaths:\n  - "src/**"\n---\n\n'
                               + "".join(f"- rule {i}\n" for i in range(1, 80))),
