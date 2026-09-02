@@ -41,7 +41,10 @@ this file is gone.
 - [ ] **Watch one check fail.** Break a gate on purpose and confirm
       `scripts/gates/selftest.py` goes red. Until you have seen that, you have
       a file, not a check.
-- [ ] **Delete this file.**
+- [ ] **Delete this file, and `.github/README.md`.** The second one is
+      the template's own front page — GitHub shows it in preference to
+      your `README.md`, which is exactly what you do not want once
+      yours is written.
 
 ## What you were given
 

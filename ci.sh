@@ -20,10 +20,11 @@ set -uo pipefail
 # JUDGE -- rather than 1: this is not a repository that failed its checks, it
 # is a repository the checks cannot see yet. And because 2 is never a pass,
 # nothing ships on it either.
-if [ -e START-HERE.md ]; then
-  echo "== the harness is not filled in yet: START-HERE.md is still here."
-  echo "   Work through it. Deleting it is the last item, and this script"
-  echo "   starts judging for real the moment it is gone."
+if [ -e START-HERE.md ] || [ -e .github/README.md ]; then
+  echo "== the harness is not filled in yet."
+  echo "   START-HERE.md is the list, and .github/README.md describes the"
+  echo "   template rather than your project. Deleting both is the last item,"
+  echo "   and this script starts judging for real the moment they are gone."
   exit 2
 fi
 
