@@ -59,6 +59,7 @@ run fast "exec-plan hygiene"         python3 scripts/gates/check_plan_hygiene.py
 run fast "no file too long to read"  python3 scripts/gates/check_file_size.py
 run fast "documented commands run"   python3 scripts/gates/check_docs_runnable.py
 run fast "public face"               python3 scripts/gates/check_community_health.py
+run fast "the wiki stays a record"   python3 scripts/gates/check_wiki_hygiene.py
 run fast "nobody's home directory"   python3 scripts/gates/check_no_machine_paths.py
 
 
