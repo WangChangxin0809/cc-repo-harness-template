@@ -65,5 +65,23 @@ jobs:
 
       # Exit 2 -- could not judge -- fails the step, and that is correct. It is
       # never a pass.
+      #
+      # The branch below exists only while this is still the template. An
+      # unfilled harness *must* exit 2, so here that is the assertion rather
+      # than the failure: a template whose front page shows a permanent red
+      # cross teaches, on day one, that a red cross is something you live with.
+      # Delete START-HERE.md, as the checklist tells you to, and what is left
+      # is a plain run of ./ci.sh.
       - name: the repository is sound
-        run: ./ci.sh
+        run: |
+          # `rc=0; cmd || rc=$?`, never `cmd; rc=$?`. The step's shell is
+          # `bash -e`, so the second form dies on the non-zero exit before the
+          # assignment ever runs -- which is how the first version of this
+          # block failed with the very code it was written to accept.
+          rc=0; ./ci.sh || rc=$?
+          if [ ! -e START-HERE.md ]; then exit "$rc"; fi
+          if [ "$rc" != "2" ]; then
+            echo "::error::an unfilled harness must exit 2, got $rc"
+            exit 1
+          fi
+          echo "::notice::could not judge, as it should be - nobody has yet written down what this repository is. Work through START-HERE.md."
