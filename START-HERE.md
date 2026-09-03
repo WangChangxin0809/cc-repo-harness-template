@@ -54,7 +54,7 @@ this file is gone.
 | `scripts/gates/` | judge the worktree, in `ci.sh` and in CI |
 | `scripts/context/` | what the hooks in `.claude/settings.json` call |
 | `.claude/skills/` | how to write docs, checks, the public face, and how to fold a note pile back into the repository |
-| `.claude/rules/` | empty. A rule with `paths:` frontmatter loads only when a matching file is read |
+| `.claude/rules/` | two rules, each under 50 tokens and scoped by `paths:`, so they load only when a matching file is read. Keep, edit, or delete them |
 | `ci.sh` | the one roster. `.github/workflows/ci.yml` calls it rather than restating it |
 | `.claude/settings.json` | wires those hooks, and declares the `cc-repo-harness` plugin as this repository's dependency |
 
