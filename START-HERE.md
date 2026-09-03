@@ -55,6 +55,7 @@ this file is gone.
 | `scripts/context/` | what the hooks in `.claude/settings.json` call |
 | `.claude/skills/` | how to write docs, checks, the public face, and how to fold a note pile back into the repository |
 | `.claude/rules/` | two rules, each under 50 tokens and scoped by `paths:`, so they load only when a matching file is read. Keep, edit, or delete them |
+| `.claude/wiki/` | an empty catalogue of what keeps going wrong. The plugin's `/learn` fills it from session transcripts; no agent reads it |
 | `ci.sh` | the one roster. `.github/workflows/ci.yml` calls it rather than restating it |
 | `.claude/settings.json` | wires those hooks, and declares the `cc-repo-harness` plugin as this repository's dependency |
 
