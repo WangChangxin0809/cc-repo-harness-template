@@ -55,6 +55,7 @@ run fast "always-on context budget"  python3 scripts/gates/check_context_budget.
 run fast "templates filled in"       python3 scripts/gates/check_templates_filled.py
 run fast "docs routing table"        python3 scripts/gates/check_docs_index.py
 run fast "docs top level"            python3 scripts/gates/check_docs_layout.py
+run fast "exec-plan hygiene"         python3 scripts/gates/check_plan_hygiene.py
 run fast "no file too long to read"  python3 scripts/gates/check_file_size.py
 run fast "documented commands run"   python3 scripts/gates/check_docs_runnable.py
 run fast "public face"               python3 scripts/gates/check_community_health.py

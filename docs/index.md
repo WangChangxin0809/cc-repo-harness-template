@@ -28,7 +28,10 @@ content belongs and declares its source in its own first line, and the gate is
 that regenerating leaves an empty `git diff`.
 
 A plan past a few steps is a folder, not a file. `README.md` carries the goal,
-the abort condition, and every step's state; a step earns its own file under
+the abort condition, and one row per step — **milestones, not a task list**.
+What the current step breaks into for the next ten minutes belongs in the
+runtime's own todo list, which is live in the interface and vanishes with the
+session; the README holds what outlives it. A step earns its own file under
 `steps/` only when it has decisions to record. Step files never restate status —
 nobody reopens a finished one to change `doing` to `done` — and each opens with
 `## Consulted` saying what was searched before the work started, or why nothing
@@ -41,7 +44,9 @@ flight* — the invariant not to break, the branch, the one command that proves 
 step landed. Not the plan: that is the `README.md` next to it, and restating it
 here means two copies drifting apart in the one place where being out of date is
 most expensive. Delete the file when the plan finishes; a stale one is worse
-than none, because it is still being delivered.
+than none, because it is still being delivered — `scripts/gates/check_plan_hygiene.py`
+fails on one, and `scripts/context/on_stop.py` runs it at the end of every turn
+rather than waiting for CI, because that is how often the cost is paid.
 
 ## I want to X -> read Y -> then edit Z
 
