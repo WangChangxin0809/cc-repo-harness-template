@@ -256,10 +256,6 @@ CASES = [
                               "## Contributing\n\nSee [CONTRIBUTING.md](CONTRIBUTING.md).\n\n"
                               "## License\n\nMIT.\n"),
     ),
-    # The plugin surface. This is the half of the repository that Claude Code
-    # actually loads, and until this gate existed it had no coverage at all --
-    # payload is code and code gets selftests, while a skill is markdown and
-    # nobody writes a test for a paragraph.
     # Bodies are free -- they load when the thing is invoked. The frontmatter
     # is not: every skill, agent and command is listed by name and description
     # on every turn, in every repository on the machine, including the ones
