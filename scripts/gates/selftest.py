@@ -790,6 +790,68 @@ CASES = [
                             'echo "install jq: brew install jq" >&2'}]}]}},
             indent=2) + "\n"),
     ),
+    # --- check_plan_hygiene.py ------------------------------------------------
+    dict(
+        gate="check_plan_hygiene.py",
+        why="a plan whose every step is closed, still carrying its CLAUDE.md",
+        needle="still delivering a CLAUDE.md",
+        plant=lambda t: (
+            write(t, "docs/exec-plans/migrate-verifier/README.md",
+                  "# Migrate to the new verifier\n\n"
+                  "Goal: every node verifying against v2, old path deleted.\n"
+                  "Abort if: v2 latency exceeds 40 ms p99 on any node.\n\n"
+                  "- [x] done    [Shadow-verify one node](steps/01-shadow.md)\n"
+                  "- [x] done    Roll to 10%\n"
+                  "- [~] dropped Dual-write the audit log — v2 writes it\n"),
+            write(t, "docs/exec-plans/migrate-verifier/CLAUDE.md",
+                  "# migrate-verifier — in flight\n\n"
+                  "Branch: `verifier-v2`. Never let a node verify against\n"
+                  "both at once. A step landed when `./ci.sh --fast` is green.\n"),
+        ),
+    ),
+    dict(
+        gate="check_plan_hygiene.py",
+        why="a plan still running, which is exactly when the file is correct",
+        needle=None,
+        plant=lambda t: (
+            write(t, "docs/exec-plans/migrate-verifier/README.md",
+                  "# Migrate to the new verifier\n\n"
+                  "Goal: every node verifying against v2, old path deleted.\n"
+                  "Abort if: v2 latency exceeds 40 ms p99 on any node.\n\n"
+                  "- [x] done    [Shadow-verify one node](steps/01-shadow.md)\n"
+                  "- [>] doing   Roll to 10%\n"
+                  "- [ ] todo    Delete the v1 path\n"),
+            write(t, "docs/exec-plans/migrate-verifier/CLAUDE.md",
+                  "# migrate-verifier — in flight\n\n"
+                  "Branch: `verifier-v2`. Never let a node verify against\n"
+                  "both at once. A step landed when `./ci.sh --fast` is green.\n"),
+        ),
+    ),
+    dict(
+        gate="check_plan_hygiene.py",
+        # The trap `session_brief.py` fell into one level down: a README that
+        # *shows* the markers rather than using them. Without stripping fences
+        # the two closed rows in the example read as a finished plan, and a
+        # folder nobody has started work in gets its CLAUDE.md deleted.
+        why="a README that only demonstrates the markers inside a fence",
+        needle=None,
+        plant=lambda t: (
+            write(t, "docs/exec-plans/retire-exporter/README.md",
+                  "# Retire the legacy exporter\n\n"
+                  "Goal: nothing imports `exporter.v1`.\n"
+                  "Abort if: v2 loses a field the billing job reads.\n\n"
+                  "Steps get rows once they exist. The shape they take:\n\n"
+                  "```markdown\n"
+                  "- [x] done    [Something finished](steps/01-thing.md)\n"
+                  "- [~] dropped Something abandoned\n"
+                  "```\n\n"
+                  "Nothing has started yet.\n"),
+            write(t, "docs/exec-plans/retire-exporter/CLAUDE.md",
+                  "# retire-exporter — in flight\n\n"
+                  "Branch: `drop-exporter-v1`. The billing job is the one\n"
+                  "reader that must not break: `./ci.sh --fast` covers it.\n"),
+        ),
+    ),
 ]
 
 
